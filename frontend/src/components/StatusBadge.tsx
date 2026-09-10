@@ -1,34 +1,49 @@
-import type { VisitStatus } from "../types";
-
 const statusConfig: Record<
-  VisitStatus,
-  { label: string; className: string }
+  string,
+  { label: string; dot: string; bg: string; text: string }
 > = {
   menunggu_perawat: {
     label: "Menunggu Perawat",
-    className: "bg-line/60 text-muted",
+    dot: "#f59e0b",
+    bg: "bg-warning-100",
+    text: "text-warning-600",
   },
   siap_diperiksa: {
     label: "Siap Diperiksa",
-    className: "bg-amber-100 text-amber-600",
+    dot: "#06b6d4",
+    bg: "bg-cyan-100",
+    text: "text-cyan-700",
   },
   sedang_diperiksa: {
     label: "Sedang Diperiksa",
-    className: "bg-teal-100 text-teal-700",
+    dot: "#3b82f6",
+    bg: "bg-primary-100",
+    text: "text-primary-700",
   },
   selesai: {
     label: "Selesai",
-    className: "bg-teal-900/10 text-teal-900",
+    dot: "#10b981",
+    bg: "bg-success-100",
+    text: "text-success-600",
   },
 };
 
-export default function StatusBadge({ status }: { status: VisitStatus }) {
-  const cfg = statusConfig[status];
+export default function StatusBadge({ status }: { status: string }) {
+  const cfg = statusConfig[status] ?? {
+    label: status,
+    dot: "#94a3b8",
+    bg: "bg-slate-100",
+    text: "text-slate-600",
+  };
+
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-xs font-medium ${cfg.className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${cfg.bg} ${cfg.text}`}
     >
-      <span className="h-1.5 w-1.5 rounded-full bg-current" />
+      <span
+        className="h-1.5 w-1.5 flex-shrink-0 rounded-full"
+        style={{ backgroundColor: cfg.dot, boxShadow: `0 0 4px ${cfg.dot}` }}
+      />
       {cfg.label}
     </span>
   );

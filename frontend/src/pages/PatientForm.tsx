@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ChevronLeft, User, Save } from "lucide-react";
 import AppShell from "../components/AppShell";
 import { useClinic } from "../context/ClinicContext";
 import type { Patient } from "../types";
@@ -13,6 +14,26 @@ const emptyPatient = (): Patient => ({
   phone: "",
   address: "",
 });
+
+function FormField({
+  label,
+  children,
+  required,
+}: {
+  label: string;
+  children: React.ReactNode;
+  required?: boolean;
+}) {
+  return (
+    <div>
+      <label className="mb-1.5 block text-sm font-semibold text-ink">
+        {label}
+        {required && <span className="ml-0.5 text-danger-500">*</span>}
+      </label>
+      {children}
+    </div>
+  );
+}
 
 export default function PatientForm() {
   const { id } = useParams();
@@ -37,96 +58,133 @@ export default function PatientForm() {
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-2xl p-8">
-        <h1 className="font-display text-2xl font-semibold text-ink">
-          {isEdit ? "Ubah Data Pasien" : "Tambah Pasien Baru"}
-        </h1>
+      <div className="mx-auto max-w-2xl p-6 lg:p-8 animate-fade-in">
+        {/* Breadcrumb */}
+        <button
+          onClick={() => navigate("/pasien")}
+          className="mb-5 flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-cyan-700"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Kembali ke Daftar Pasien
+        </button>
 
-        <div className="mt-6 space-y-4 rounded-lg bg-white shadow-soft p-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-sm font-medium">
-                Nama Lengkap
-              </label>
-              <input
-                value={form.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                className="w-full rounded-sm border border-line px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-                placeholder="Contoh: Ahmad Fauzi"
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">NIK</label>
-              <input
-                value={form.nik}
-                onChange={(e) => handleChange("nik", e.target.value)}
-                maxLength={16}
-                className="w-full rounded-sm border border-line px-3 py-2 text-sm font-mono outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-                placeholder="16 digit NIK"
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">
-                Jenis Kelamin
-              </label>
-              <select
-                value={form.gender}
-                onChange={(e) =>
-                  handleChange("gender", e.target.value as "L" | "P")
-                }
-                className="w-full rounded-sm border border-line px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-              >
-                <option value="L">Laki-laki</option>
-                <option value="P">Perempuan</option>
-              </select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">
-                Tanggal Lahir
-              </label>
-              <input
-                type="date"
-                value={form.birthDate}
-                onChange={(e) => handleChange("birthDate", e.target.value)}
-                className="w-full rounded-sm border border-line px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">
-                No. Telepon
-              </label>
-              <input
-                value={form.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                className="w-full rounded-sm border border-line px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-                placeholder="08xxxxxxxxxx"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-sm font-medium">
-                Alamat
-              </label>
-              <textarea
-                value={form.address}
-                onChange={(e) => handleChange("address", e.target.value)}
-                rows={2}
-                className="w-full rounded-sm border border-line px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-              />
+        {/* Header */}
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-100">
+            <User className="h-5 w-5 text-cyan-700" strokeWidth={2} />
+          </div>
+          <div>
+            <h1 className="font-display text-2xl font-bold text-ink">
+              {isEdit ? "Ubah Data Pasien" : "Pendaftaran Pasien Baru"}
+            </h1>
+            <p className="text-sm text-muted">
+              {isEdit
+                ? "Perbarui informasi data pasien di bawah ini"
+                : "Isi formulir pendaftaran pasien baru"}
+            </p>
+          </div>
+        </div>
+
+        {/* Form Card */}
+        <div className="card rounded-2xl p-6">
+          {/* Section: Identitas */}
+          <div className="mb-6">
+            <p className="section-label mb-4">Identitas Pasien</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <FormField label="Nama Lengkap" required>
+                  <input
+                    value={form.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    className="input-base"
+                    placeholder="Contoh: Ahmad Fauzi"
+                  />
+                </FormField>
+              </div>
+
+              <FormField label="NIK" required>
+                <input
+                  value={form.nik}
+                  onChange={(e) => handleChange("nik", e.target.value)}
+                  maxLength={16}
+                  className="input-base font-mono"
+                  placeholder="16 digit NIK"
+                />
+              </FormField>
+
+              <FormField label="Tanggal Lahir" required>
+                <input
+                  type="date"
+                  value={form.birthDate}
+                  onChange={(e) => handleChange("birthDate", e.target.value)}
+                  className="input-base"
+                />
+              </FormField>
+
+              <FormField label="Jenis Kelamin">
+                <div className="flex gap-3">
+                  {(["L", "P"] as const).map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => handleChange("gender", g)}
+                      className={`flex flex-1 items-center justify-center rounded-xl border-2 py-2.5 text-sm font-semibold transition-all ${
+                        form.gender === g
+                          ? g === "L"
+                            ? "border-blue-500 bg-blue-50 text-blue-700"
+                            : "border-pink-400 bg-pink-50 text-pink-600"
+                          : "border-line bg-white text-muted hover:border-slate-300"
+                      }`}
+                    >
+                      {g === "L" ? "♂ Laki-laki" : "♀ Perempuan"}
+                    </button>
+                  ))}
+                </div>
+              </FormField>
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 border-t border-line pt-4">
+          {/* Divider */}
+          <div className="mb-6 border-t border-line" />
+
+          {/* Section: Kontak */}
+          <div className="mb-6">
+            <p className="section-label mb-4">Informasi Kontak</p>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField label="No. Telepon">
+                <input
+                  value={form.phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                  className="input-base"
+                  placeholder="08xxxxxxxxxx"
+                />
+              </FormField>
+
+              <div className="col-span-2">
+                <FormField label="Alamat Lengkap">
+                  <textarea
+                    value={form.address}
+                    onChange={(e) => handleChange("address", e.target.value)}
+                    rows={2}
+                    className="input-base resize-none"
+                    placeholder="Jl. Contoh No. 1, Kecamatan, Kota"
+                  />
+                </FormField>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 border-t border-line pt-5">
             <button
               onClick={() => navigate("/pasien")}
-              className="rounded-full border border-line px-4 py-2 text-sm font-medium hover:bg-paper"
+              className="btn-secondary"
             >
               Batal
             </button>
-            <button
-              onClick={handleSubmit}
-              className="rounded-full bg-teal-900 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700"
-            >
-              Simpan Data Pasien
+            <button onClick={handleSubmit} className="btn-primary flex items-center gap-2">
+              <Save className="h-4 w-4" />
+              {isEdit ? "Simpan Perubahan" : "Daftarkan Pasien"}
             </button>
           </div>
         </div>
